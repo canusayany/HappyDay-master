@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Mindscape.WpfElements;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,19 +14,30 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Xml.Serialization;
+using Color = System.Windows.Media.Color;
+using Point = System.Windows.Point;
 
 namespace HappyValentinesDay
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public MainWindow()
         {
             InitializeComponent();
         }
-        MediaPlayer mp = new MediaPlayer();
+     
+
+        protected internal virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+    
+
+    MediaPlayer mp = new MediaPlayer();
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Q)
@@ -31,7 +46,7 @@ namespace HappyValentinesDay
 
 
         Task task;
-        Class_Setting setting = new Class_Setting() { SnowflakeType = 3,SnowflakeCount=20,SnowflakeSize=45 };
+        Class_Setting setting = new Class_Setting() { SnowflakeType = 3,SnowflakeCount=20,SnowflakeSize=45 ,WordColor=Colors.YellowGreen};
        
         UserControl userControl = new UserControl() ;
         void Start(Canvas panel)
@@ -73,6 +88,12 @@ namespace HappyValentinesDay
                                {
                                    BGCSnow bGCSnow = new BGCSnow();
                                    userControl = bGCSnow;
+
+                               }
+                               else if (setting.SnowflakeType == 4)
+                               {
+                                   BGCStarxaml bGCStarxaml = new BGCStarxaml();
+                                   userControl = bGCStarxaml;
                                }
                                else
                                {
@@ -105,10 +126,10 @@ namespace HappyValentinesDay
                            }));
                        }
 
-                       Console.WriteLine("j=" + j);
+                       
                    }
                }));
-            Console.WriteLine("动画执行完毕");
+          
         }
         private async void StartTextAsync(String[] data)
         {
@@ -127,7 +148,12 @@ namespace HappyValentinesDay
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-           setting= DeserializSettingClass();
+            //SerializSettingClass(setting);
+           
+            setting = DeserializSettingClass();
+            ColorFromSetting = setting.WordColor; 
+            CPB.DataContext = this;
+            CPB.Color = setting.WordColor;
             InitialTray();
             GetNewMusicFromList();
             //   mp.Open(new Uri(@"Music\Ina Wroldsen - I wanted you.mp3", UriKind.Relative));
@@ -216,7 +242,7 @@ namespace HappyValentinesDay
 
             //设置托盘的各个属性
             notifyIcon = new System.Windows.Forms.NotifyIcon();
-            
+
             // notifyIcon.BalloonTipText = "程序开始运行";
             notifyIcon.Text = "托盘图标";
             notifyIcon.Icon = new System.Drawing.Icon("Data/Touch Meee.ico");
@@ -225,29 +251,66 @@ namespace HappyValentinesDay
             notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(notifyIcon_MouseClick);
 
             //设置菜单项
-          
+            #region 音乐控制
             System.Windows.Forms.MenuItem MI_MusicCtrl = new System.Windows.Forms.MenuItem("下一曲");
-            System.Windows.Forms.MenuItem MI_BGCType1 = new System.Windows.Forms.MenuItem("飘落样式1");
-            System.Windows.Forms.MenuItem MI_BGCType2= new System.Windows.Forms.MenuItem("飘落样式2");
-            System.Windows.Forms.MenuItem MI_BGCType3 = new System.Windows.Forms.MenuItem("飘落样式3");
-            System.Windows.Forms.MenuItem MI_BGCType = new System.Windows.Forms.MenuItem("飘落样式", new System.Windows.Forms.MenuItem[] { MI_BGCType1, MI_BGCType2, MI_BGCType3 });
+            MI_MusicCtrl.Click += Menu_Click;
+            #endregion
+
+            #region 背景控制
+            System.Windows.Forms.MenuItem MI_BGCType1 = new System.Windows.Forms.MenuItem("飘落样式-爱");
+            System.Windows.Forms.MenuItem MI_BGCType2 = new System.Windows.Forms.MenuItem("飘落样式-福");
+            System.Windows.Forms.MenuItem MI_BGCType3 = new System.Windows.Forms.MenuItem("飘落样式-雪");
+            System.Windows.Forms.MenuItem MI_BGCType4 = new System.Windows.Forms.MenuItem("飘落样式-星");
+            System.Windows.Forms.MenuItem MI_BGCType = new System.Windows.Forms.MenuItem("飘落样式", new System.Windows.Forms.MenuItem[] { MI_BGCType1, MI_BGCType2, MI_BGCType3, MI_BGCType4 });
             MI_BGCType1.Click += MI_BGCType1_Click;
             MI_BGCType2.Click += MI_BGCType2_Click;
             MI_BGCType3.Click += MI_BGCType3_Click;
-            System.Windows.Forms.MenuItem MI_BGCCtrl = new System.Windows.Forms.MenuItem("背景设置",new System.Windows.Forms.MenuItem[] { MI_BGCType });
-            MI_MusicCtrl.Click += Menu_Click;
+            MI_BGCType4.Click += MI_BGCType4_Click;
+            System.Windows.Forms.MenuItem MI_BGCCtrl = new System.Windows.Forms.MenuItem("背景设置", new System.Windows.Forms.MenuItem[] { MI_BGCType });
+
+            #endregion
+            #region 文字控制
+            //< ms:DropDownColorPicker HorizontalAlignment = "Left" Margin = "622,41,0,0" VerticalAlignment = "Top" Height = "103" Width = "108" />
+           
+            System.Windows.Forms.MenuItem MI_WordColor = new System.Windows.Forms.MenuItem("颜色设置");
+            System.Windows.Forms.MenuItem MI_WordCtrl = new System.Windows.Forms.MenuItem("文字设置", new System.Windows.Forms.MenuItem[] { MI_WordColor });
+            MI_WordColor.Click += MI_WordColor_Click;
+            #endregion
+
             //退出菜单项
             System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem("Exit");
             exit.Click += new EventHandler(exit_Click);
 
-           
-            System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { MI_BGCCtrl, MI_MusicCtrl, exit };
+
+            System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { MI_WordCtrl, MI_BGCCtrl, MI_MusicCtrl, exit };
             notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(childen);
 
             //窗体状态改变时候触发
             this.StateChanged += new EventHandler(SysTray_StateChanged);
         }
-
+      public   Color ColorFromSetting 
+        {
+            get { return setting.WordColor; }
+            set
+            {
+               
+               
+                setting.WordColor = value;
+            
+                CPB.Visibility = Visibility.Collapsed;
+                CPB.IsEnabled = false;
+                //OnPropertyChanged("ColorFromSetting");
+            }
+        }
+        private void MI_WordColor_Click(object sender, EventArgs e)
+        {
+            CPB.Visibility = Visibility.Visible;
+            CPB.IsEnabled = true;
+          
+            // ColorPicker.change
+        }
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern bool GetCursorPos(out Point pt);
         private void MI_BGCType3_Click(object sender, EventArgs e)
         {
 
@@ -258,7 +321,16 @@ namespace HappyValentinesDay
            
             
         }
+        private void MI_BGCType4_Click(object sender, EventArgs e)
+        {
 
+
+
+            setting.SnowflakeType = 4;
+            Start(PetalBackground);
+
+
+        }
         private void MI_BGCType2_Click(object sender, EventArgs e)
         {
           
@@ -355,5 +427,12 @@ namespace HappyValentinesDay
             notifyIcon.Dispose();
             System.Windows.Application.Current.Shutdown();
         }
+
+        private void ColorPicker_ContextMenuClosing(object sender, ContextMenuEventArgs e)
+        {
+
+        }
     }
+
+   
 }

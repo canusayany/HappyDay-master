@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>HappyValentinesDay</RootNamespace>
     <AssemblyName>HappyValentinesDay</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -58,7 +58,19 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Egorozh.ColorPicker.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Egorozh.ColorPicker.Core.1.0.1\lib\net47\Egorozh.ColorPicker.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Egorozh.ColorPicker.WPF, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Egorozh.ColorPicker.WPF.5.0.0\lib\net47\Egorozh.ColorPicker.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="Egorozh.ColorPicker.WPF.Dialog, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Egorozh.ColorPicker.WPF.Dialog.5.0.0\lib\net47\Egorozh.ColorPicker.WPF.Dialog.dll</HintPath>
+    </Reference>
+    <Reference Include="Mindscape.WpfElements, Version=7.0.34.23280, Culture=neutral, PublicKeyToken=0a92c4b7d9c14aa4, processorArchitecture=MSIL" />
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -86,12 +98,20 @@
     <Compile Include="BGCSnow.xaml.cs">
       <DependentUpon>BGCSnow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BGCStarxaml.xaml.cs">
+      <DependentUpon>BGCStarxaml.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ColorToSolidColorBrushValueConverter .cs" />
     <Compile Include="Setting.cs" />
     <Page Include="BGCFu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="BGCSnow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BGCStarxaml.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -129,10 +149,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Properties\Licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
